@@ -15,6 +15,7 @@ public class GameManager {
 
     private final ItemRush plugin;
     private Material targetItem;
+    private List<Player> players;
     private final Map<UUID, Integer> itemCounts = new HashMap<>();
     private boolean running = false;
 
@@ -34,7 +35,7 @@ public class GameManager {
             return;
         }
 
-        List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
+        players = new ArrayList<>(Bukkit.getOnlinePlayers());
         //if (players.size() < 2) {
         //    Bukkit.broadcast(Component.text("Not enough players to start the game.", NamedTextColor.RED));
         //    return;
@@ -61,13 +62,13 @@ public class GameManager {
                     return;
                 }
 
-                updateTimer();
+                updateScoreboard();
                 timeLeftSeconds--;
             }
         }.runTaskTimer(plugin, 0, 20); // every second
     }
 
-    private void updateTimer() {
+    private void updateScoreboard() {
         String formattedTime = String.format("%d:%02d", timeLeftSeconds / 60, timeLeftSeconds % 60);
 
         // Remove old timerLine2 score to avoid duplicates
@@ -77,31 +78,32 @@ public class GameManager {
 
         // Set updated time with score below "Time Left:" line
         objective.getScore(timerLine2).setScore(14);
-    }
 
-    public void recordItem(Player player, Material item) {
-        if (!running || item != targetItem) return;
+        for (Player player : players) {
+            int count = countPlayerItem(player, this.targetItem);
 
-        int count = countItemInInventory(player, targetItem);
-        itemCounts.put(player.getUniqueId(), count);
+            itemCounts.put(player.getUniqueId(), count);
 
-        // Update the score for this player on the shared scoreboard
-        if (objective != null) {
-            objective.getScore(player.getName()).setScore(count);
-        }
-    }
-
-    private int countItemInInventory(Player player, Material material) {
-        int count = 0;
-        for (ItemStack item : player.getInventory().getContents()) {
-            if (item != null && item.getType() == material) {
-                count += item.getAmount();
+            // Update the score for this player on the shared scoreboard
+            if (objective != null) {
+                objective.getScore(player.getName()).setScore(count);
             }
         }
-        return count;
     }
 
-    private final Map<UUID, Objective> playerObjectives = new HashMap<>();
+    public int countPlayerItem(Player player, Material item) {
+        if (!running || item != targetItem) return 0;
+
+        int count = 0;
+        for (ItemStack item_in_inventory : player.getInventory().getContents()) {
+            assert item_in_inventory != null;
+            if (item_in_inventory.getType() == item) {
+                count += item_in_inventory.getAmount();
+            }
+        }
+
+        return count;
+    }
 
     private void setupScoreboards() {
         ScoreboardManager manager = Bukkit.getScoreboardManager();
@@ -110,7 +112,11 @@ public class GameManager {
         objective = scoreboard.registerNewObjective("ItemRush", Criteria.DUMMY, Component.text("ItemRush Score"));
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        // Timer lines - added right away
+        objective.getScore(TIMER_LINE_1).setScore(15);
+        objective.getScore(timerLine2).setScore(14);
+
+        for (Player player : players) {
             objective.getScore(player.getName()).setScore(0);
             player.setScoreboard(scoreboard);
         }

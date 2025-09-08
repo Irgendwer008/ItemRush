@@ -14,7 +14,6 @@ public class ItemRush extends JavaPlugin {
         instance = this;
         gameManager = new GameManager(this);
         Objects.requireNonNull(getCommand("itemrush")).setExecutor(new ItemRushCommand(gameManager));
-        getServer().getPluginManager().registerEvents(new GameListener(gameManager), this);
         getLogger().info("ItemRush enabled!");
     }
 
