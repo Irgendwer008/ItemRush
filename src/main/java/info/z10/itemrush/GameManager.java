@@ -1,7 +1,10 @@
 package info.z10.itemrush;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -26,17 +29,25 @@ public class GameManager {
     private String timerLine2 = "2:00";  // will update every second
     private int timeLeftSeconds = 120; // 2 minutes countdown
 
+    private World gameworld;
+
     public GameManager(ItemRush plugin) {
         this.plugin = plugin;
     }
 
-    public void startGame() {
+    public void startGame(CommandSender sender) {
         if (running) {
             Bukkit.broadcast(Component.text("Game is already running!", NamedTextColor.RED));
             return;
         }
 
-        players = new ArrayList<>(Bukkit.getOnlinePlayers());
+        if (sender instanceof Player player) {
+            gameworld = player.getWorld();
+        } else {
+            sender.sendMessage("Game can only be started by a player");
+        }
+
+        players = new ArrayList<>(gameworld.getPlayers());
         //if (players.size() < 2) {
         //    Bukkit.broadcast(Component.text("Not enough players to start the game.", NamedTextColor.RED));
         //    return;
@@ -134,7 +145,7 @@ public class GameManager {
     public void cancelGame() {
         running = false;
 
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        for (Player player : gameworld.getPlayers()) {
             player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         }
 
@@ -144,7 +155,7 @@ public class GameManager {
     public void finishGame() {
         running = false;
 
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        for (Player player : new ArrayList<>(Bukkit.getOnlinePlayers())) {
             player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         }
 
@@ -154,7 +165,19 @@ public class GameManager {
         }
 
         UUID winnerId = Collections.max(itemCounts.entrySet(), Map.Entry.comparingByValue()).getKey();
+
+        while (Bukkit.getPlayer(winnerId) == null) {
+            if (itemCounts.isEmpty()) {
+                Bukkit.broadcast(Component.text("No one that participated is online anymore!", NamedTextColor.RED));
+                return;
+            }
+
+            itemCounts.remove(winnerId);
+            winnerId = Collections.max(itemCounts.entrySet(), Map.Entry.comparingByValue()).getKey();
+        }
+
         Player winner = Bukkit.getPlayer(winnerId);
+
 
         if (winner == null) {
             return;

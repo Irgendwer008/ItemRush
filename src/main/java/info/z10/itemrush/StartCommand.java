@@ -25,7 +25,7 @@ public class StartCommand implements SubCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        gameManager.startGame();
+        gameManager.startGame(sender);
         sender.sendMessage("§aItemRush game started.");
     }
 
