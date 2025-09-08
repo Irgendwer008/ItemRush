@@ -52,10 +52,10 @@ public class GameManager {
 
         setupScoreboards();
 
-
         new BukkitRunnable() {
             @Override
             public void run() {
+
                 if (timeLeftSeconds <= 0) {
                     endGame();
                     cancel();
@@ -96,8 +96,7 @@ public class GameManager {
 
         int count = 0;
         for (ItemStack item_in_inventory : player.getInventory().getContents()) {
-            assert item_in_inventory != null;
-            if (item_in_inventory.getType() == item) {
+            if (item_in_inventory != null && item_in_inventory.getType() == item) {
                 count += item_in_inventory.getAmount();
             }
         }
