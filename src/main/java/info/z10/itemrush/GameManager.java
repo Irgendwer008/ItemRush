@@ -18,6 +18,7 @@ public class GameManager {
     private List<Player> players;
     private final Map<UUID, Integer> itemCounts = new HashMap<>();
     private boolean running = false;
+    private BukkitRunnable cycle;
 
     private Scoreboard scoreboard;
     private Objective objective;
@@ -46,18 +47,20 @@ public class GameManager {
         running = true;
         timeLeftSeconds = 120;
 
-        Bukkit.broadcast(Component.text("ItemRush has started.", NamedTextColor.GOLD));
+        Bukkit.broadcast(Component.text("Game has started.", NamedTextColor.GOLD));
         Bukkit.broadcast(Component.text("Collect as many " + getFormattedItemName(targetItem) + "s as you can!", NamedTextColor.GOLD));
         Bukkit.broadcast(Component.text("You have 2 minutes.", NamedTextColor.GOLD));
 
         setupScoreboards();
 
-        new BukkitRunnable() {
+        cycle = new BukkitRunnable() {
             @Override
             public void run() {
+                if (timeLeftSeconds < 1) {
+                    finishGame();
+                }
 
-                if (timeLeftSeconds <= 0) {
-                    endGame();
+                if (!running) {
                     cancel();
                     return;
                 }
@@ -65,7 +68,8 @@ public class GameManager {
                 updateScoreboard();
                 timeLeftSeconds--;
             }
-        }.runTaskTimer(plugin, 0, 20); // every second
+        };
+        cycle.runTaskTimer(plugin, 0, 20);
     }
 
     private String getFormattedItemName(Material item) {
@@ -86,7 +90,9 @@ public class GameManager {
         for (Player player : players) {
             int count = countPlayerItem(player, this.targetItem);
 
-            itemCounts.put(player.getUniqueId(), count);
+            if (count > 0) {
+                itemCounts.put(player.getUniqueId(), count);
+            }
 
             // Update the score for this player on the shared scoreboard
             if (objective != null) {
@@ -125,7 +131,17 @@ public class GameManager {
         }
     }
 
-    public void endGame() {
+    public void cancelGame() {
+        running = false;
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+        }
+
+        Bukkit.broadcast(Component.text("The Game was cancelled!", NamedTextColor.RED));
+    }
+
+    public void finishGame() {
         running = false;
 
         for (Player player : Bukkit.getOnlinePlayers()) {

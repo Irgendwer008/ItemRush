@@ -4,6 +4,7 @@ main: info.z10.itemrush.ItemRush
 api-version: 1.20
 commands:
   itemrush:
-    description: Starts the ItemRush minigame
-    usage: /itemrush start
+    description: Commands for the ItemRush minigame
+    usage: /itemrush <start|cancel|finish|help>
+    aliases: [ir]
     permission: itemrush.admin

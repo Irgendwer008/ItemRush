@@ -7,13 +7,29 @@ import java.util.Objects;
 public class ItemRush extends JavaPlugin {
 
     private static ItemRush instance;
-    private GameManager gameManager;
+    private static GameManager gameManager;
 
     @Override
     public void onEnable() {
         instance = this;
         gameManager = new GameManager(this);
-        Objects.requireNonNull(getCommand("itemrush")).setExecutor(new ItemRushCommand(gameManager));
+
+        // Register the command executor and tab completer
+        getCommand("itemrush").setExecutor(
+                new ItemRushCommand(
+                        new StartCommand(gameManager),
+                        new CancelCommand(gameManager),
+                        new FinishCommand(gameManager)
+                )
+        );
+        getCommand("itemrush").setTabCompleter(
+                new ItemRushCommand(
+                        new StartCommand(gameManager),
+                        new CancelCommand(gameManager),
+                        new FinishCommand(gameManager)
+                )
+        );
+
         getLogger().info("ItemRush enabled!");
     }
 
@@ -22,7 +38,7 @@ public class ItemRush extends JavaPlugin {
         getLogger().info("ItemRush disabled.");
     }
 
-    public static ItemRush getInstance() {
-        return instance;
+    public GameManager getGameManager() {
+        return gameManager;
     }
 }
