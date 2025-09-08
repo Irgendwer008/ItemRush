@@ -1,0 +1,7 @@
+name: ItemRush
+version: 1.0
+main: info.z10.itemrush.ItemRush
+api-version: 1.20
+commands:
+  startrush:
+    description: Start the item rush game
