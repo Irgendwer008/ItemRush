@@ -1,5 +1,6 @@
-package info.z10.itemrush;
+package info.z10.itemrush.commands;
 
+import info.z10.itemrush.SubCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

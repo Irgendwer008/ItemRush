@@ -1,6 +1,5 @@
 package info.z10.itemrush;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -27,12 +26,17 @@ public class GameManager {
     private Objective objective;
     private final String TIMER_LINE_1 = "Time Left:";
     private String timerLine2 = "2:00";  // will update every second
-    private int timeLeftSeconds = 120; // 2 minutes countdown
+    private int gameDurationSeconds = 120; // 2 minutes countdown
+    private int timeLeftSeconds = gameDurationSeconds; // 2 minutes countdown
 
     private World gameworld;
 
     public GameManager(ItemRush plugin) {
         this.plugin = plugin;
+    }
+
+    public void setGameDuration(int gameDurationSeconds) {
+        this.gameDurationSeconds = gameDurationSeconds;
     }
 
     public void startGame(CommandSender sender) {
@@ -56,11 +60,11 @@ public class GameManager {
         targetItem = getRandomItem();
         itemCounts.clear();
         running = true;
-        timeLeftSeconds = 120;
+        timeLeftSeconds = gameDurationSeconds;
 
         Bukkit.broadcast(Component.text("Game has started.", NamedTextColor.GOLD));
-        Bukkit.broadcast(Component.text("Collect as many " + getFormattedItemName(targetItem) + "s as you can!", NamedTextColor.GOLD));
-        Bukkit.broadcast(Component.text("You have 2 minutes.", NamedTextColor.GOLD));
+        Bukkit.broadcast(Component.text("Collect as many " + FormatHelper.getFormattedItemName(targetItem) + "s as you can!", NamedTextColor.GOLD));
+        Bukkit.broadcast(Component.text("You have " + FormatHelper.formatSeconds(timeLeftSeconds), NamedTextColor.GOLD));
 
         setupScoreboards();
 
@@ -81,10 +85,6 @@ public class GameManager {
             }
         };
         cycle.runTaskTimer(plugin, 0, 20);
-    }
-
-    private String getFormattedItemName(Material item) {
-        return item.name().toLowerCase().replace("_"," ");
     }
 
     private void updateScoreboard() {
@@ -185,7 +185,7 @@ public class GameManager {
 
         Bukkit.broadcast(Component.text("Time's up!", NamedTextColor.AQUA));
         Bukkit.broadcast(Component.text("The winner is " + winner.getName() + " with " +
-                itemCounts.get(winnerId) + " " + getFormattedItemName(targetItem) + "s!", NamedTextColor.GREEN));
+                itemCounts.get(winnerId) + " " + FormatHelper.getFormattedItemName(targetItem) + "s!", NamedTextColor.GREEN));
     }
 
     public boolean isRunning() {

@@ -1,5 +1,7 @@
-package info.z10.itemrush;
+package info.z10.itemrush.commands;
 
+import info.z10.itemrush.GameManager;
+import info.z10.itemrush.SubCommand;
 import org.bukkit.command.CommandSender;
 
 import java.util.Collections;
