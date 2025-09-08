@@ -97,7 +97,7 @@ public class GameManager {
         timerLine2 = formattedTime;
 
         // Set updated time with score below "Time Left:" line
-        objective.getScore(timerLine2).setScore(14);
+        objective.getScore(timerLine2).setScore(-3);
 
         for (Player player : players) {
             int count = countPlayerItem(player, this.targetItem);
@@ -130,12 +130,13 @@ public class GameManager {
         ScoreboardManager manager = Bukkit.getScoreboardManager();
 
         scoreboard = manager.getNewScoreboard();
-        objective = scoreboard.registerNewObjective("ItemRush", Criteria.DUMMY, Component.text("ItemRush Score"));
+        objective = scoreboard.registerNewObjective("ItemRush", Criteria.DUMMY, Component.text(targetItem.name().replace("_", "-") + "-SCORE"));
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
         // Timer lines - added right away
-        objective.getScore(TIMER_LINE_1).setScore(15);
-        objective.getScore(timerLine2).setScore(14);
+        objective.getScore("").setScore(-1);
+        objective.getScore(TIMER_LINE_1).setScore(-2);
+        objective.getScore(timerLine2).setScore(-3);
 
         for (Player player : players) {
             objective.getScore(player.getName()).setScore(0);
