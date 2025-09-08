@@ -47,7 +47,7 @@ public class GameManager {
         timeLeftSeconds = 120;
 
         Bukkit.broadcast(Component.text("ItemRush has started.", NamedTextColor.GOLD));
-        Bukkit.broadcast(Component.text("Collect as many " + targetItem.name().toLowerCase().replace("_"," ") + "s as you can!", NamedTextColor.GOLD));
+        Bukkit.broadcast(Component.text("Collect as many " + getFormattedItemName(targetItem) + "s as you can!", NamedTextColor.GOLD));
         Bukkit.broadcast(Component.text("You have 2 minutes.", NamedTextColor.GOLD));
 
         setupScoreboards();
@@ -66,6 +66,10 @@ public class GameManager {
                 timeLeftSeconds--;
             }
         }.runTaskTimer(plugin, 0, 20); // every second
+    }
+
+    private String getFormattedItemName(Material item) {
+        return item.name().toLowerCase().replace("_"," ");
     }
 
     private void updateScoreboard() {
@@ -142,7 +146,7 @@ public class GameManager {
 
         Bukkit.broadcast(Component.text("Time's up!", NamedTextColor.AQUA));
         Bukkit.broadcast(Component.text("The winner is " + winner.getName() + " with " +
-                itemCounts.get(winnerId) + " " + targetItem.name() + "s!", NamedTextColor.GREEN));
+                itemCounts.get(winnerId) + " " + getFormattedItemName(targetItem) + "s!", NamedTextColor.GREEN));
     }
 
     public boolean isRunning() {
