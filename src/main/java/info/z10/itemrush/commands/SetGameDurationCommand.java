@@ -8,11 +8,11 @@ import org.bukkit.command.CommandSender;
 import java.util.Collections;
 import java.util.List;
 
-public class SetGameDuration implements SubCommand {
+public class SetGameDurationCommand implements SubCommand {
 
     private final GameManager gameManager;
 
-    public SetGameDuration(GameManager gameManager) {
+    public SetGameDurationCommand(GameManager gameManager) {
         this.gameManager = gameManager;
     }
 

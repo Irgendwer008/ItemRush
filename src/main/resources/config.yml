@@ -1,0 +1,6 @@
+gameDuration: 120
+possibleItems:
+  - diamond
+  - feather
+  - iron_ingot
+  - bone

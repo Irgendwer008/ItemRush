@@ -72,4 +72,16 @@ public class FormatHelper {
     public static String getFormattedItemName(Material item) {
         return item.name().toLowerCase().replace("_"," ");
     }
+
+    public static String getAllPossibleItems(ItemRush plugin) {
+        StringBuilder itemsString = new StringBuilder();
+
+        List<String> currentItems = plugin.getConfig().getStringList("possibleItems");
+
+        for (String item : currentItems) {
+            itemsString.append(item).append(", ");
+        }
+
+        return itemsString.substring(0, itemsString.length() - 2);
+    }
 }

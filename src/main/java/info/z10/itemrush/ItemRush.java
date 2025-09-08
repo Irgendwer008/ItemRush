@@ -11,13 +11,19 @@ public class ItemRush extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+
+        saveDefaultConfig();
+
         gameManager = new GameManager(this);
 
         ItemRushCommand itemRushCommand = new ItemRushCommand(
                 new StartCommand(gameManager),
                 new CancelCommand(gameManager),
                 new FinishCommand(gameManager),
-                new SetGameDuration(gameManager)
+                new SetGameDurationCommand(gameManager),
+                new AddItemCommand(this),
+                new ListItemsCommand(this),
+                new RemoveItemCommand(this)
         );
 
         // Register the command executor and tab completer

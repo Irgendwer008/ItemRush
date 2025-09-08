@@ -25,14 +25,15 @@ public class GameManager {
     private Scoreboard scoreboard;
     private Objective objective;
     private final String TIMER_LINE_1 = "Time Left:";
-    private String timerLine2 = "2:00";  // will update every second
-    private int gameDurationSeconds = 120; // 2 minutes countdown
-    private int timeLeftSeconds = gameDurationSeconds; // 2 minutes countdown
+    private String timerLine2 = "00:00";  // will update every second
+    private int gameDurationSeconds;
+    private int timeLeftSeconds = gameDurationSeconds;
 
     private World gameworld;
 
     public GameManager(ItemRush plugin) {
         this.plugin = plugin;
+        gameDurationSeconds = plugin.getConfig().getInt("gameDuration");
     }
 
     public void setGameDuration(int gameDurationSeconds) {
@@ -192,15 +193,29 @@ public class GameManager {
         return running;
     }
 
+    private List<Material> getPossibleItems(List<String> itemNames) {
+        if (itemNames == null || itemNames.isEmpty()) {
+            return null;
+        }
+
+        ArrayList<Material> itemObjects = new ArrayList<>(Collections.emptyList());
+
+        for (String item : itemNames) {
+            itemObjects.add(Material.getMaterial(item.toUpperCase(Locale.ROOT)));
+        }
+
+        return itemObjects;
+    }
+
     private Material getRandomItem() {
-        List<Material> items = Arrays.asList(
-                Material.DIAMOND,
-                Material.FEATHER,
-                Material.APPLE,
-                Material.IRON_INGOT,
-                Material.BONE
-        );
-        Collections.shuffle(items);
-        return items.get(0);
+        List<Material> itemObjects = getPossibleItems((List<String>) plugin.getConfig().getList("possibleItems"));
+
+        if (itemObjects == null) {
+            return null;
+        }
+
+        Collections.shuffle(itemObjects);
+
+        return itemObjects.get(0);
     }
 }
