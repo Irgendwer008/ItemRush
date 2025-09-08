@@ -2,14 +2,28 @@ package info.z10.itemrush;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Objects;
+
 public class ItemRush extends JavaPlugin {
+
+    private static ItemRush instance;
+    private GameManager gameManager;
+
     @Override
     public void onEnable() {
-        getLogger().info("ItemRush plugin enabled!");
+        instance = this;
+        gameManager = new GameManager(this);
+        Objects.requireNonNull(getCommand("itemrush")).setExecutor(new ItemRushCommand(gameManager));
+        getServer().getPluginManager().registerEvents(new GameListener(gameManager), this);
+        getLogger().info("ItemRush enabled!");
     }
 
     @Override
     public void onDisable() {
-        getLogger().info("ItemRush plugin disabled.");
+        getLogger().info("ItemRush disabled.");
+    }
+
+    public static ItemRush getInstance() {
+        return instance;
     }
 }
