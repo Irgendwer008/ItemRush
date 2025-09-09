@@ -152,6 +152,8 @@ public class GameManager {
         }
 
         Bukkit.broadcast(Component.text("The Game was cancelled!", NamedTextColor.RED));
+
+        players.clear();
     }
 
     public void finishGame() {
@@ -188,6 +190,8 @@ public class GameManager {
         Bukkit.broadcast(Component.text("Time's up!", NamedTextColor.AQUA));
         Bukkit.broadcast(Component.text("The winner is " + winner.getName() + " with " +
                 itemCounts.get(winnerId) + " " + FormatHelper.getFormattedItemName(targetItem) + "s!", NamedTextColor.GREEN));
+
+        players.clear();
     }
 
     public boolean isRunning() {
@@ -218,5 +222,13 @@ public class GameManager {
         Collections.shuffle(itemObjects);
 
         return itemObjects.get(0);
+    }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    public Material getTargetItem() {
+        return targetItem;
     }
 }

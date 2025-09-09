@@ -23,7 +23,8 @@ public class ItemRush extends JavaPlugin {
                 new SetGameDurationCommand(gameManager),
                 new AddItemCommand(this),
                 new ListItemsCommand(this),
-                new RemoveItemCommand(this)
+                new RemoveItemCommand(this),
+                new ListPlayersCommand(gameManager)
         );
 
         // Register the command executor and tab completer

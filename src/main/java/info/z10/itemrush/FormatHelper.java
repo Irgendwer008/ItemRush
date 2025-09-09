@@ -2,6 +2,7 @@ package info.z10.itemrush;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,5 +84,20 @@ public class FormatHelper {
         }
 
         return itemsString.substring(0, itemsString.length() - 2);
+    }
+
+    public static String getPlayers(GameManager gameManager) {
+        List<Player> players = gameManager.getPlayers();
+        StringBuilder result = new StringBuilder();
+
+        for (Player player : players) {
+            result
+                    .append(player.getName())
+                    .append(" (")
+                    .append(gameManager.countPlayerItem(player, gameManager.getTargetItem()))
+                    .append("), ");
+        }
+
+        return result.substring(0, result.length() - 2);
     }
 }

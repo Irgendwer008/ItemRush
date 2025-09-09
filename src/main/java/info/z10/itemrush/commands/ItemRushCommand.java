@@ -46,7 +46,9 @@ public class ItemRushCommand implements CommandExecutor, TabCompleter {
         if (args.length == 1) {
             List<String> completions = new ArrayList<>();
             for (SubCommand subCommand : subCommands) {
-                completions.add(subCommand.getName());
+                if (subCommand.getName().startsWith(args[0])) {
+                    completions.add(subCommand.getName());
+                }
             }
             return completions;
         }
