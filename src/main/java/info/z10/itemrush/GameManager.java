@@ -1,7 +1,9 @@
 package info.z10.itemrush;
 
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -11,6 +13,7 @@ import org.bukkit.scoreboard.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
+import java.time.Duration;
 import java.util.*;
 
 public class GameManager {
@@ -168,6 +171,18 @@ public class GameManager {
             return;
         }
 
+        for (Player player : new ArrayList<>(Bukkit.getOnlinePlayers())) {
+            Title title = Title.title(
+                    Component.text("The Game is over!", NamedTextColor.GOLD),
+                    Component.text(FormatHelper.getFormattedItemNameWithCount(targetItem, itemCounts.get(player.getUniqueId())) + ", Rank " + getPlayerPlace(player.getUniqueId()) + " out of " + players.size(), NamedTextColor.AQUA),
+                    Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(5), Duration.ofSeconds(2))
+            );
+
+            player.showTitle(title);
+
+            player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_DEATH, 1.0f, 1.0f);
+        }
+
         UUID winnerId = Collections.max(itemCounts.entrySet(), Map.Entry.comparingByValue()).getKey();
 
         while (Bukkit.getPlayer(winnerId) == null) {
@@ -189,10 +204,25 @@ public class GameManager {
 
         Bukkit.broadcast(Component.text("Time's up!", NamedTextColor.AQUA));
         Bukkit.broadcast(Component.text("The winner is " + winner.getName() + " with " +
-                itemCounts.get(winnerId) + " " + FormatHelper.getFormattedItemName(targetItem) + "s!", NamedTextColor.GREEN));
+                FormatHelper.getFormattedItemNameWithCount(targetItem, itemCounts.get(winnerId)), NamedTextColor.GREEN));
 
         players.clear();
     }
+
+    public int getPlayerPlace(UUID playerId) {
+        List<Map.Entry<UUID, Integer>> sorted = itemCounts.entrySet().stream()
+                .sorted((a, b) -> b.getValue().compareTo(a.getValue()))
+                .toList();
+
+        for (int i = 0; i < sorted.size(); i++) {
+            if (sorted.get(i).getKey().equals(playerId)) {
+                return i + 1;
+            }
+        }
+
+        return -1; // Not found
+    }
+
 
     public boolean isRunning() {
         return running;
